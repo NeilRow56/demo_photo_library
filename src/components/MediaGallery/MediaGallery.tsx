@@ -1,29 +1,49 @@
-"use client";
+/* eslint-disable @next/next/no-img-element */
+'use client'
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Plus, X, Save } from 'lucide-react';
+import { useState } from 'react'
+import Link from 'next/link'
+import { Plus, X, Save } from 'lucide-react'
 
-import Container from '@/components/Container';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import Container from '@/components/Container'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
+
+interface CloudinaryResources {
+  height: number
+  public_id: string
+  secure_url: string
+  width: number
+}
 
 interface MediaGalleryProps {
-  resources: Array<{ id: string }>
+  resources: Array<CloudinaryResources>
 }
 
 const MediaGallery = ({ resources }: MediaGalleryProps) => {
-  const [selected, setSelected] = useState<Array<string>>([]);
-  const [creation, setCreation] = useState();
+  const [selected, setSelected] = useState<Array<string>>([])
+  const [creation, setCreation] = useState()
 
   /**
    * handleOnClearSelection
    */
 
   function handleOnClearSelection() {
-    setSelected([]);
+    setSelected([])
   }
 
   /**
@@ -31,8 +51,8 @@ const MediaGallery = ({ resources }: MediaGalleryProps) => {
    */
 
   function handleOnCreationOpenChange(isOpen: boolean) {
-    if ( !isOpen ) {
-      setCreation(undefined);
+    if (!isOpen) {
+      setCreation(undefined)
     }
   }
 
@@ -47,7 +67,7 @@ const MediaGallery = ({ resources }: MediaGalleryProps) => {
           </DialogHeader>
           <DialogFooter className="justify-end sm:justify-end">
             <Button>
-              <Save className="h-4 w-4 mr-2" />
+              <Save className="mr-2 h-4 w-4" />
               Save to Library
             </Button>
           </DialogFooter>
@@ -57,7 +77,7 @@ const MediaGallery = ({ resources }: MediaGalleryProps) => {
       {/** Management navbar presented when assets are selected */}
 
       {selected.length > 0 && (
-        <Container className="fixed z-50 top-0 left-0 w-full h-16 flex items-center justify-between gap-4 bg-white shadow-lg">
+        <Container className="fixed left-0 top-0 z-50 flex h-16 w-full items-center justify-between gap-4 bg-white shadow-lg">
           <div className="flex items-center gap-4">
             <ul>
               <li>
@@ -68,7 +88,7 @@ const MediaGallery = ({ resources }: MediaGalleryProps) => {
               </li>
             </ul>
             <p>
-              <span>{ selected?.length } Selected</span>
+              <span>{selected?.length} Selected</span>
             </p>
           </div>
           <ul className="flex items-center gap-4">
@@ -98,30 +118,38 @@ const MediaGallery = ({ resources }: MediaGalleryProps) => {
       <Container>
         <form>
           {Array.isArray(resources) && (
-            <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 mb-12">
+            <ul className="mb-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {resources.map((resource) => {
-                const isChecked = selected.includes(resource.id);
+                const isChecked = selected.includes(resource.public_id)
 
                 function handleOnSelectResource(checked: boolean) {
                   setSelected((prev) => {
-                    if ( checked ) {
-                      return Array.from(new Set([...(prev || []), resource.id]));
+                    if (checked) {
+                      return Array.from(
+                        new Set([...(prev || []), resource.public_id])
+                      )
                     } else {
-                      return prev.filter((id) => id !== resource.id);
+                      return prev.filter((id) => id !== resource.public_id)
                     }
-                  });
+                  })
                 }
 
                 return (
-                  <li key={resource.id} className="bg-white dark:bg-zinc-700">
-                    <div className="relative group">
-                      <label className={`absolute ${isChecked ? 'opacity-100' : 'opacity-0'} group-hover:opacity-100 transition-opacity top-3 left-3 p-1`} htmlFor={resource.id}>
+                  <li
+                    key={resource.public_id}
+                    className="bg-white dark:bg-zinc-700"
+                  >
+                    <div className="group relative">
+                      <label
+                        className={`absolute ${isChecked ? 'opacity-100' : 'opacity-0'} left-3 top-3 p-1 transition-opacity group-hover:opacity-100`}
+                        htmlFor={resource.public_id}
+                      >
                         <span className="sr-only">
-                          Select Image &quot;{ resource.id }&quot;
+                          Select Image &quot;{resource.public_id}&quot;
                         </span>
                         <Checkbox
-                          className={`w-6 h-6 rounded-full bg-white shadow ${isChecked ? 'border-blue-500' : 'border-zinc-200'}`}
-                          id={resource.id}
+                          className={`h-6 w-6 rounded-full bg-white shadow ${isChecked ? 'border-blue-500' : 'border-zinc-200'}`}
+                          id={resource.public_id}
                           onCheckedChange={handleOnSelectResource}
                           checked={isChecked}
                         />
@@ -131,9 +159,9 @@ const MediaGallery = ({ resources }: MediaGalleryProps) => {
                         href="#"
                       >
                         <img
-                          width="300"
-                          height="300"
-                          src="/icon-1024x1024.png"
+                          width={resource.width}
+                          height={resource.height}
+                          src={resource.secure_url}
                           alt="Cloudinary Logo"
                         />
                       </Link>
@@ -149,4 +177,4 @@ const MediaGallery = ({ resources }: MediaGalleryProps) => {
   )
 }
 
-export default MediaGallery;
+export default MediaGallery
